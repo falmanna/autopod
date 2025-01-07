@@ -25,8 +25,6 @@ We’re excited to welcome contributions and feedback!
 - Have ideas for new features or integrations? Let us know!  
 - Want to improve the workflow or optimize costs further? Contributions are highly encouraged!  
 
-Check out the [CONTRIBUTING.md](./CONTRIBUTING.md) file for details on how to get started.  
-
 ## 📋 Requirements  
 - [n8n](https://n8n.io/)  
 - [Raindrop](https://raindrop.io/) account (more services coming soon!)  
