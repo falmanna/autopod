@@ -34,7 +34,5 @@ Check out the [CONTRIBUTING.md](./CONTRIBUTING.md) file for details on how to ge
 - Google Drive for podcast storage  
 
 ## 📦 Installation  
-1. Clone this repository:  
-   ```bash  
-   git clone https://github.com/yourusername/automatic-podcast-generator.git  
-   cd automatic-podcast-generator  
+1. Manually copy workflows to your n8n instance
+2. Or use [restore from github](https://n8n.io/workflows/2289-restore-backed-up-workflows-from-github-to-n8n/) template
