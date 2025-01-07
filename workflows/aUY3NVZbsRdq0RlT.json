@@ -1,0 +1,453 @@
+{
+  "active": true,
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Raindrop": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Raindrop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "Checkpoint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checkpoint": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-01-02T12:50:49.905Z",
+  "id": "aUY3NVZbsRdq0RlT",
+  "meta": null,
+  "name": "Raindrop to Podcast",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -480,
+        140
+      ],
+      "id": "a188101b-0014-45a4-8f3b-94343d76e0b0",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "resource": "bookmark",
+        "operation": "getAll",
+        "collectionId": 32559724,
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.raindrop",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        140
+      ],
+      "id": "88e70952-74b4-444b-9899-bfb33cf1b044",
+      "name": "Raindrop",
+      "credentials": {
+        "raindropOAuth2Api": {
+          "id": "IpDszct8wyzksA4B",
+          "name": "Raindrop account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "workflow_cache",
+          "mode": "list",
+          "cachedResultName": "workflow_cache"
+        },
+        "limit": 1,
+        "where": {
+          "values": [
+            {
+              "column": "id",
+              "value": "sync_time_raindrop_papers"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -320,
+        -160
+      ],
+      "id": "5f8faef9-48a5-4de9-a373-88f5e0e817c1",
+      "name": "Postgres",
+      "executeOnce": true,
+      "credentials": {
+        "postgres": {
+          "id": "UHuT7LYLzAQoc3cL",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7c10c259-b0eb-4b11-bcec-fafd0aff6f21",
+              "leftValue": "={{ $json.formattedCreated }}",
+              "rightValue": "={{ $('Postgres').first().json.value }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        -160
+      ],
+      "id": "2643dc00-03cb-4f46-a462-07dbdf749732",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.created }}",
+        "format": "X",
+        "outputFieldName": "formattedCreated",
+        "options": {
+          "includeInputFields": true
+        }
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        0,
+        140
+      ],
+      "id": "4502b458-6431-4b98-8bc5-4d59042eb0ea",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "v4a5gjVL94rIAXwB",
+          "mode": "list",
+          "cachedResultName": "Extract Content"
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        680,
+        140
+      ],
+      "id": "7c3ff8f2-440c-4655-adb9-11799c0720f1",
+      "name": "Execute Workflow",
+      "retryOnFail": false,
+      "maxTries": 2,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "44a924fa-dc30-44ab-ae44-7747a4ac0cf0",
+              "name": "url",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "a18bf6a6-34f2-444c-8bbf-417df9881e3f",
+              "name": "type",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "2cef6b30-d425-4713-90f0-a1a68e32f06e",
+              "name": "createdAt",
+              "value": "={{ $json.formattedCreated }}",
+              "type": "string"
+            },
+            {
+              "id": "2fec64c2-f9d3-4df7-ada4-e4e1005c99ce",
+              "name": "cover",
+              "value": "={{ $json.cover }}",
+              "type": "string"
+            },
+            {
+              "id": "c695b8a3-114f-473e-aa2c-cdc803bbb68b",
+              "name": "user_instruction",
+              "value": "={{ $json.note }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        140
+      ],
+      "id": "03f0152d-3183-4dd7-a049-77140edb6caf",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "created"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -160
+      ],
+      "id": "77d74cd3-2f0a-47a1-8d6d-aa38c2d16f7e",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        440,
+        140
+      ],
+      "id": "6462e6ad-6aba-4523-8ebd-2ea4f29eb18b",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "workflow_cache",
+          "mode": "list",
+          "cachedResultName": "workflow_cache"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "sync_time_raindrop_papers",
+            "value": "={{ $('Loop Over Items').last().json.createdAt }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "value",
+              "displayName": "value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        900,
+        140
+      ],
+      "id": "d3134f25-532b-46c0-96d9-0c984052300d",
+      "name": "Checkpoint",
+      "credentials": {
+        "postgres": {
+          "id": "UHuT7LYLzAQoc3cL",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "timezone": "Europe/Istanbul"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "tags": [
+    {
+      "createdAt": "2025-01-05T18:21:41.691Z",
+      "updatedAt": "2025-01-05T18:21:41.691Z",
+      "id": "oRElnQ13IW1tQQHV",
+      "name": "Trigger"
+    },
+    {
+      "createdAt": "2025-01-07T21:03:39.121Z",
+      "updatedAt": "2025-01-07T21:03:39.121Z",
+      "id": "f2wvvOUDWEemDKxT",
+      "name": "Backup"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2025-01-07T21:03:48.705Z",
+  "versionId": "e28f2036-3e6f-4fda-a27e-d2e49d98ea94"
+}
